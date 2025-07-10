@@ -1,5 +1,5 @@
 <script setup>
-import { getItems } from '@/services/cartService';
+import { getItems, removeItem, removeAll } from '@/services/cartService';
 import { reactive, onMounted } from 'vue';
 
 const state = reactive({
@@ -8,18 +8,31 @@ const state = reactive({
 
 const load = async () => {
   const res = await getItems();
-  if (res.status === 200) {
-    state.items = res.data;
+  if (res === undefined || res.status !== 200) {
+    return;
+  }
+  state.items = res.data;
+};
+
+const remove = async (cartId) => {
+  if (confirm('삭제하시겠습니까?')) {
+    const res = await removeItem(cartId);
+    if (res === undefined || res.status !== 200) {
+      return;
+    }
+    load();
   }
 };
 
-// const remove = async itemId => {
-// const res = await removeItem(i.id);
-// if(res.status === 200){
-// alert('상품을 삭제하였습니다');
-// await load();
-// }
-// }
+const clear = async () => {
+  if(confirm('삭제하시겠습니까?')){
+    const res = await removeAll();
+    if (res === undefined || res.status !== 200) {
+      return;
+    }
+    state.items=[];
+  }
+};
 
 onMounted(() => {
   load();
@@ -44,6 +57,11 @@ onMounted(() => {
             >
           </li>
         </ul>
+        <div>
+          <button @click="clear" class="btn btn-danger mb-3">
+            장바구니 비우기
+          </button>
+        </div>
         <div class="act">
           <router-link to="/order" class="btn btn-primary"
             >주문하기</router-link

@@ -6,6 +6,9 @@ export const addItem = (itemId) => {
 export const getItems = () => {
   return axios.get('/cart').catch((e) => e.response);
 };
-export const removeItem = () => {
+export const removeItem = (cartId) => {
+  return axios.delete(`/cart/${cartId}`).catch((e) => e.response);
+};
+export const removeAll = () => {
   return axios.delete('/cart').catch((e) => e.response);
 };
