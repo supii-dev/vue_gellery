@@ -31,9 +31,21 @@ const submit = async () => {
     state.form.cardNumber = '';
   }
   state.form.itemIds = state.items.map((item) => item.itemId);
-  console.log(state.form.itemIds)
+  console.log(state.form.itemIds);
   const res = await addOrder(state.form);
-
+  if (res === undefined || res.status !== 200) {
+    alert('에러발생');
+    return;
+  }
+  const message = ['주문이 완료되었습니다'];
+  if (state.form.payment === 'bank') {
+    const price = computedTotalPrice.value.toLocaleString();
+    message.push(
+      `한국은행 123-456-777 계좌로 ${price}원을 입금해주시기 바랍니다.`
+    );
+  }
+  alert(message.join('\n'));
+  await router.push('/');
 };
 
 const computedTotalPrice = computed(() => {
@@ -150,7 +162,7 @@ const computedTotalPrice = computed(() => {
           <div class="pt-1" v-if="state.form.payment === 'card'">
             <label for="cardNum" class="form-label">카드 번호</label>
             <input
-              type="text"
+              type="text"                                                                                                                                                                                                                                                                                                                                                                                                                                                                
               class="form-control p-3"
               id="cardNum"
               v-model="state.form.cardNumber"
